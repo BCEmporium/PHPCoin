@@ -5,7 +5,6 @@
 	include("menus/menus.php");
 
 	$info = $b->getinfo();
-	print_r($info);
 	
 	//This is a dirty hack, but should go ok until version 9.x
 	if(strlen($info['version']) < 6){
@@ -23,6 +22,10 @@
 		<label>Version</label>
 		<?php echo "$version.$sub_version.$build";?>
 	</div>
+	<div class="infoLine">
+		<label>Blocks</label>
+		<?php echo $info['blocks'];?>
+	</div>	
 	<div class="infoLine">
 		<label>Balance</label>
 		<?php echo number_format($info['balance'],8,".",",");?> BTC
@@ -53,5 +56,33 @@
 	</div>	
 <?php		
 	}
+	
+	$sql = "SELECT COUNT(*) AS nUsers FROM users";
+	$q = mysql_query($sql);
+	$r = mysql_fetch_array($q);
 ?>	
+	<div class="infoLine">
+		<label>Reg. Users</label>
+		<?php echo $r['nUsers'];?>
+	</div>	
+<?php
+	$sql = "SELECT COUNT(*) AS nAccounts FROM accounts";
+	$q = mysql_query($sql);
+	$t = mysql_fetch_array($q);	
+?>	
+	<div class="infoLine">
+		<label>Nr. Accounts</label>
+		<?php echo $t['nAccounts'];?> (Average: <?php echo round($t['nAccounts'] / $r['nUsers']);?> accounts per user)
+	</div>	
+<?php
+	$waiting = $b->listaccounts(0);
+	$waitDep = 0;
+	foreach($waiting as $k => $w){
+		if($w > 0 && $k != $config['central_account']['value']) $waitDep += $w;
+	}
+?>	
+	<div class="infoLine">
+		<label>Deposits incomming</label>
+		<?php echo $waitDep;?> BTC
+	</div>
 </div>
