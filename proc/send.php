@@ -69,7 +69,9 @@
                 }else{
                     $receiver = mysql_fetch_assoc($q);  
                     $new_balance = $previous_balance - $amount;    
-                    mysql_query("INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`) VALUES({$account['id']},'".date("Y-m-d H:i:s")."','Payment to $addrto',$amount,0,$new_balance)");
+                    //Get the current block
+                    $cBlock = $b->getblockcount();
+                    mysql_query("INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`,`txblock`) VALUES({$account['id']},'".date("Y-m-d H:i:s")."','Payment to $addrto',$amount,0,$new_balance,$cBlock)");
                     mysql_query("UPDATE accounts SET balance = balance - $amount WHERE id = {$account['id']}"); 
                     //A small issue; if the destination account is forwarded, will not forward to prevent loop attacks.
                    $prevBal = 0;
@@ -80,7 +82,7 @@
                        $prevBal = $pbal['balance'];
                    }
                    $newBal = $prevBal + $amount;                    
-                   mysql_query("INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`) VALUES({$receiver['id']},'".date("Y-m-d H:i:s")."','Payment from {$_SESSION['name']}',$amount,1,$newBal)");
+                   mysql_query("INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`,`txblock`) VALUES({$receiver['id']},'".date("Y-m-d H:i:s")."','Payment from {$_SESSION['name']}',$amount,1,$newBal,$cBlock)");
                    mysql_query("UPDATE accounts SET balance = balance + $amount WHERE id = {$receiver['id']}");                    
                     
                 }
@@ -90,7 +92,7 @@
                 //Address is not local!
                         $txid = $b->sendfrom($config['central_account']['value'],$addrto,$amount,(int)$config['confirmations']['value']);
                         $new_balance = $previous_balance - $amount;    
-                        mysql_query("INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`) VALUES({$account['id']},'".date("Y-m-d H:i:s")."','Payment to $addrto',$amount,0,$new_balance)");
+                        mysql_query("INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`,`txblock`) VALUES({$account['id']},'".date("Y-m-d H:i:s")."','Payment to $addrto',$amount,0,$new_balance,$cBlock)");
                         mysql_query("UPDATE accounts SET balance = balance - $amount WHERE id = {$account['id']}");               
                         //Get the transaction info to see what went with fees
                         $txinfo = $b->gettransaction($txid);
@@ -98,7 +100,7 @@
                         $fee -= $txinfo['fee'];
                         $new_balance -= $fee;
                         if($fee > 0){
-                            mysql_query("INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`) VALUES({$account['id']},'".date("Y-m-d H:i:s")."','Bitcoin Network Fee',$fee,0,$new_balance)");
+                            mysql_query("INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`,`txblock`) VALUES({$account['id']},'".date("Y-m-d H:i:s")."','Bitcoin Network Fee',$fee,0,$new_balance,$cBlock)");
                             mysql_query("UPDATE accounts SET balance = balance - $fee WHERE id = {$account['id']}");                                           
                         }                
             }

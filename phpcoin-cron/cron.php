@@ -1,8 +1,7 @@
 <?php
   define("_V",1);
   //This file must NOT be accessible from the Web!
-  $coin_install_path = ""; //Full path to your PHPCoin public html folder
-
+  $coin_install_path = "/web/default/public_html";
   include($coin_install_path ."/sys/config.php");
   include($coin_install_path ."/inc/general_functions.php");
   error_reporting(E_ALL);
@@ -11,7 +10,7 @@
   
   //Starting CRON sequence
   
-  $b = new jsonRPCClient("http://$btc_user:$btc_pass@127.0.0.1:8332");
+  $b = new jsonRPCClient("http://$btc_user:$btc_pass@$btc_ip:$btc_port");
   
   //Checking for new deposits
   //$accounts = $b->listaccounts((int)$config['confirmations']['value']);
@@ -35,7 +34,9 @@
           $prevBal = $pbal['balance'];
       }
       $newBal = $prevBal + $a;
-      mysql_query("INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`) VALUES({$act['id']},'".date("Y-m-d H:i:s")."','Bitcoin deposit',$a,1,$newBal)");
+      //Get the current block
+      $cBlock = $b->getblockcount();      
+      mysql_query("INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`,`txblock`) VALUES({$act['id']},'".date("Y-m-d H:i:s")."','Bitcoin deposit',$a,1,$newBal,$cBlock)");
       mysql_query("UPDATE accounts SET balance = balance + $a WHERE id = {$act['id']}");
       
       //Check if account is forwarded
@@ -58,7 +59,7 @@
                 }else{
                     $receiver = mysql_fetch_assoc($q);  
                     $nextBal = $newBal - $a;    
-                    mysql_query("INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`) VALUES({$act['id']},'".date("Y-m-d H:i:s")."','Forward to {$act['forward_to']}',$a,0,$nextBal)");
+                    mysql_query("INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`,`txblock`) VALUES({$act['id']},'".date("Y-m-d H:i:s")."','Forward to {$act['forward_to']}',$a,0,$nextBal,$cBlock)");
                     mysql_query("UPDATE accounts SET balance = balance - $a WHERE id = {$act['id']}"); 
                     //A small issue; re-forwarded accounts will not forward to prevent loop attacks.
                    $prevBal = 0;
@@ -69,7 +70,7 @@
                        $prevBal = $pbal['balance'];
                    }
                    $newBal = $prevBal + $a;                    
-                   mysql_query("INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`) VALUES({$receiver['id']},'".date("Y-m-d H:i:s")."','Bitcoin forward',$a,1,$newBal)");
+                   mysql_query("INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`,`txblock`) VALUES({$receiver['id']},'".date("Y-m-d H:i:s")."','Bitcoin forward',$a,1,$newBal,$cBlock)");
                    mysql_query("UPDATE accounts SET balance = balance + $a WHERE id = {$receiver['id']}");                    
                     
                 }
@@ -81,7 +82,7 @@
                     }else{
                         $txid = $b->sendfrom($config['central_account']['value'],$act['forward_to'],$txamount,(int)$config['confirmations']['value']);
                         $nextBal = $newBal - $txamount;    
-                        mysql_query("INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`) VALUES({$act['id']},'".date("Y-m-d H:i:s")."','Forward to {$act['forward_to']}',$txamount,0,$nextBal)");
+                        mysql_query("INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`,`txblock`) VALUES({$act['id']},'".date("Y-m-d H:i:s")."','Forward to {$act['forward_to']}',$txamount,0,$nextBal,$cBlock)");
                         mysql_query("UPDATE accounts SET balance = balance - $txamount WHERE id = {$act['id']}");               
                         //Get the transaction info to see what went with fees
                         $txinfo = $b->gettransaction($txid);
@@ -89,7 +90,7 @@
                         $fee -= $txinfo['fee'];
                         $nextBal -= $fee;
                         if($fee > 0){
-                            mysql_query("INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`) VALUES({$act['id']},'".date("Y-m-d H:i:s")."','Bitcoin Network Fee',$fee,0,$nextBal)");
+                            mysql_query("INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`,`txblock`) VALUES({$act['id']},'".date("Y-m-d H:i:s")."','Bitcoin Network Fee',$fee,0,$nextBal,$cBlock)");
                             mysql_query("UPDATE accounts SET balance = balance - $fee WHERE id = {$act['id']}");                                           
                         }
                     }

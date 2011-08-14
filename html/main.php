@@ -48,7 +48,7 @@ $(function(){
 </div>
 <div class="infoLine">
     <label>Bitcoin Network</label>
-    Blocks: <?php echo $b->getblockcount();?>
+    Blocks: <?php $cBlock = $b->getblockcount(); echo $cBlock;?>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Connection:
 <?php
     $cons = $b->getconnectioncount();
@@ -86,6 +86,7 @@ $(function(){
         <tr class="listingHeader">
             <td>Date</td>
             <td>Description</td>
+            <td>Block</td>
             <td>Debit</td>
             <td>Credit</td>
             <td>Balance</td>
@@ -104,6 +105,7 @@ $(function(){
      <tr class="listingRow<?php echo $k;?>">
         <td><?php echo $r['dtime'];?></td>
         <td><?php echo stripslashes($r['description']);?></td>
+        <td align="right"><?php echo $r['txblock'];?> (<?php echo $cBlock - $r['txblock'];?> conf.)</td>
         <td align="right"><?php echo $r['credit'] == 1 ? "&nbsp;" : number_format($r['amount'],8,".",",") . " BTC";?></td>
         <td align="right"><?php echo $r['credit'] == 0 ? "&nbsp;" : number_format($r['amount'],8,".",",") . " BTC";?></td>
         <td align="right"><?php echo number_format($r['balance'],8,".",",") . " BTC";?></td>
