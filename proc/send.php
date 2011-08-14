@@ -92,6 +92,8 @@
                 //Address is not local!
                         $txid = $b->sendfrom($config['central_account']['value'],$addrto,$amount,(int)$config['confirmations']['value']);
                         $new_balance = $previous_balance - $amount;    
+                        //Get the current block
+                        $cBlock = $b->getblockcount();
                         mysql_query("INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`,`txblock`) VALUES({$account['id']},'".date("Y-m-d H:i:s")."','Payment to $addrto',$amount,0,$new_balance,$cBlock)");
                         mysql_query("UPDATE accounts SET balance = balance - $amount WHERE id = {$account['id']}");               
                         //Get the transaction info to see what went with fees
