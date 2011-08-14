@@ -1,0 +1,37 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+#loginArea {
+    border: 1px solid #808080;
+    border-radius: 15px;
+    display: block;
+    padding: 10px;
+    margin-top: 10px;
+    width: 450px;
+    position: relative;
+    left: 50%;
+    margin-left: -225px;
+    padding-top: 60px;
+    background: url("img/logo.jpg") 10px 10px no-repeat;
+}
+#loginForm {
+    padding-top: 20px;
+    background: url("img/login.jpg") center top no-repeat;
+}
+.formLine {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.formLine label{
+    float: left;
+    width: 180px;
+    font-family: arial, helvetica, sans-serif;
+    font-size: 13px;
+    color: #585858;
+    font-weight: bold;
+}
+#registerForm {
+    padding-top: 20px;
+    background: url("img/register.jpg") center top no-repeat;
+}
