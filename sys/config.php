@@ -11,13 +11,13 @@
   $btc_port = "8332";
   
 //----------------------- NOTHING TO CONFIGURE BELLOW THIS LINE ---------//
-  mysql_connect($db_host,$db_user,$db_pass) || die("Unable to connect to DB!");
-  mysql_select_db($db_name) || die("Unable to select DB!");
+  ($GLOBALS["___mysqli_ston"] = mysqli_connect($db_host, $db_user, $db_pass)) || die("Unable to connect to DB!");
+  ((bool)mysqli_query($GLOBALS["___mysqli_ston"], "USE $db_name")) || die("Unable to select DB!");
   
   $config = array();
   $sql = "SELECT * FROM config";
-  $q = mysql_query($sql);
-  while($r = mysql_fetch_assoc($q)){
+  $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+  while($r = mysqli_fetch_assoc($q)){
       $config[$r['key']] = array("value" => $r['value'], "explain" => $r['explain']);
   }
 ?>

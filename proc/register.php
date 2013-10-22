@@ -19,23 +19,23 @@
    
    if(empty($e)){
        $sql = "SELECT * FROM users WHERE user LIKE '$user'";
-       $q = mysql_query($sql);
-       if(mysql_num_rows($q)) $e[] = "Username in use!";
+       $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+       if(mysqli_num_rows($q)) $e[] = "Username in use!";
    }
    
    if(empty($e) && $email){
        $sql = "SELECT * FROM users WHERE email LIKE '$email'";
-       $q = mysql_query($sql);
-       if(mysql_num_rows($q)) $e[] = "Email already registered!";
+       $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+       if(mysqli_num_rows($q)) $e[] = "Email already registered!";
    }   
    
    if(empty($e)){
        $salt = md5(rand().$name.microtime());
        $passh = hash("ripemd160",$pass.$salt);
-       mysql_query("INSERT INTO users(user,pass,name,email) VALUES('$user','$passh','$name','$email')");
-       $myuid = mysql_insert_id();
-       mysql_query("INSERT INTO salt(uid,salt) VALUES($myuid,'$salt')");
-       mysql_query("INSERT INTO accounts(uid,account_id,account_name) VALUES($myuid,1,'Default')");
+       mysqli_query($GLOBALS["___mysqli_ston"], "INSERT INTO users(user,pass,name,email) VALUES('$user','$passh','$name','$email')");
+       $myuid = ((is_null($___mysqli_res = mysqli_insert_id($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
+       mysqli_query($GLOBALS["___mysqli_ston"], "INSERT INTO salt(uid,salt) VALUES($myuid,'$salt')");
+       mysqli_query($GLOBALS["___mysqli_ston"], "INSERT INTO accounts(uid,account_id,account_name) VALUES($myuid,1,'Default')");
        $success = "You're now registered to this system";
        $_SESSION['id'] = $myuid;
        $_SESSION['user'] = $user;

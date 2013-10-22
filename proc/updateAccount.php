@@ -12,20 +12,20 @@
     if($fwd == 1 && !$fwdto) $e[] = "You must enter a bitcoin address to forward to!";
     if(empty($e)){
        $sql = "SELECT a.pass, b.salt FROM users AS a, salt AS b WHERE a.id = {$_SESSION['id']} AND b.uid = a.id";
-       $q = mysql_query($sql);
-       $mu = mysql_fetch_assoc($q);
+       $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+       $mu = mysqli_fetch_assoc($q);
        $testPass = hash("ripemd160",$pass . $mu['salt']);
        if($testPass != $mu['pass']) $e[] = "Wrong current password!";        
     }
     if(empty($e)){
         $sql = "SELECT * FROM accounts WHERE id = $aid AND uid = {$_SESSION['id']}";
-        $q = mysql_query($sql);
-        if(!mysql_num_rows($q)) $e[] = "Account not found!";        
+        $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+        if(!mysqli_num_rows($q)) $e[] = "Account not found!";        
     }
     if(empty($e)){
         $sql = "SELECT * FROM accounts WHERE account_name LIKE '$name' AND uid = {$_SESSION['id']} AND id != $aid";
-        $q = mysql_query($sql);
-        if(mysql_num_rows($q)) $e[] = "You already have another account with that same name!";                
+        $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+        if(mysqli_num_rows($q)) $e[] = "You already have another account with that same name!";                
     }
     
     if(empty($e) && $fwd == 1){
@@ -34,7 +34,7 @@
     }
     if(empty($e)){
         $sql = "UPDATE accounts SET account_name = '$name', forward = $fwd, forward_to = '$fwdto' WHERE id = $aid";
-        mysql_query($sql);
+        mysqli_query($GLOBALS["___mysqli_ston"], $sql);
         $success = "Account updated";
     }else{
         $error = implode("<br/>",$e);

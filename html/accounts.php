@@ -4,8 +4,8 @@
     include("menus/menus.php");
     
     $sql = "SELECT COUNT(*) AS myAccounts FROM accounts WHERE uid = {$_SESSION['id']}";
-    $q = mysql_query($sql);
-    $r = mysql_fetch_array($q);
+    $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+    $r = mysqli_fetch_array($q);
     $nrAccounts = $r['myAccounts'];
 ?>
 <div id="mainBodyLMenu">
@@ -30,13 +30,13 @@
     </tr>
 <?php
     $sql = "SELECT * FROM accounts WHERE uid = {$_SESSION['id']} ORDER BY account_id ASC";
-    $q = mysql_query($sql);
+    $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
     $k = 0;
     $total_accounts = 0;
     $accounts = 0;
-    while($r = mysql_fetch_assoc($q)){
+    while($r = mysqli_fetch_assoc($q)){
         $total_accounts += $r['balance'];
-        $acounts++;
+        $accounts++;
 ?>
     <tr class="listingRow<?php echo $k;?>">
         <td align="right"><?php echo $r['account_id'];?></td>

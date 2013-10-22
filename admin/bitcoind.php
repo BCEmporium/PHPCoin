@@ -33,8 +33,8 @@
 <?php
 	$users_balance = 0;
 	$sql = "SELECT `balance` FROM accounts";
-	$q = mysql_query($sql);
-	while($r = mysql_fetch_assoc($q)){
+	$q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+	while($r = mysqli_fetch_assoc($q)){
 		$users_balance += $r['balance'];
 	}
 	$diff = $info['balance'] - $users_balance;
@@ -58,8 +58,8 @@
 	}
 	
 	$sql = "SELECT COUNT(*) AS nUsers FROM users";
-	$q = mysql_query($sql);
-	$r = mysql_fetch_array($q);
+	$q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+	$r = mysqli_fetch_array($q);
 ?>	
 	<div class="infoLine">
 		<label>Reg. Users</label>
@@ -67,8 +67,8 @@
 	</div>	
 <?php
 	$sql = "SELECT COUNT(*) AS nAccounts FROM accounts";
-	$q = mysql_query($sql);
-	$t = mysql_fetch_array($q);	
+	$q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+	$t = mysqli_fetch_array($q);	
 ?>	
 	<div class="infoLine">
 		<label>Nr. Accounts</label>

@@ -9,8 +9,8 @@
     if(empty($e) && $npass != $npass2) $e[] = "Password and confirmation doesn't match!";
    if(empty($e)){
        $sql = "SELECT a.pass, b.salt FROM users AS a, salt AS b WHERE a.id = {$_SESSION['id']} AND b.uid = a.id";
-       $q = mysql_query($sql);
-       $mu = mysql_fetch_assoc($q);
+       $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+       $mu = mysqli_fetch_assoc($q);
        $testPass = hash("ripemd160",$pass . $mu['salt']);
        if($testPass != $mu['pass']) $e[] = "Wrong current password!";
    }     
@@ -18,8 +18,8 @@
    if(empty($e)){
        $npass_salt = md5(rand() . microtime() . $_SESSION['name']);
        $npass_hash = hash("ripemd160",$npass . $npass_salt);
-       mysql_query("UPDATE users SET pass = '$npass_hash' WHERE id = {$_SESSION['id']}");
-       mysql_query("UPDATE salt SET salt = '$npass_salt' WHERE uid = {$_SESSION['id']}");
+       mysqli_query($GLOBALS["___mysqli_ston"], "UPDATE users SET pass = '$npass_hash' WHERE id = {$_SESSION['id']}");
+       mysqli_query($GLOBALS["___mysqli_ston"], "UPDATE salt SET salt = '$npass_salt' WHERE uid = {$_SESSION['id']}");
        
        $success = "Password updated";
    }else{

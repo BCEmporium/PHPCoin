@@ -7,11 +7,11 @@
     
     if(empty($e)){
         $sql = "SELECT * FROM accounts WHERE id = $aid AND uid = {$_SESSION['id']}";
-        $q = mysql_query($sql);
-        if(!mysql_num_rows($q)) $e[] = "Account not found!";
+        $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+        if(!mysqli_num_rows($q)) $e[] = "Account not found!";
     }
     if(empty($e)){
-        $account_to_edit = mysql_fetch_assoc($q);
+        $account_to_edit = mysqli_fetch_assoc($q);
         $pg = "forms/edit_account.php";
     }else{
         $error = implode("<br/>",$e);

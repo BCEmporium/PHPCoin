@@ -6,11 +6,11 @@
   
   if(empty($e)){
     $sql = "SELECT balance FROM accounts WHERE uid = {$_SESSION['id']} AND account_id = {$act[2]}";
-    $q = mysql_query($sql);
-    if(!mysql_num_rows($q)) $e[] = "Active account not found!";
+    $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+    if(!mysqli_num_rows($q)) $e[] = "Active account not found!";
   }
   if(empty($e)){
-    $account = mysql_fetch_assoc($q);
+    $account = mysqli_fetch_assoc($q);
     $available = $account['balance'] - 0.0005;    
     if($available <= 0) $e[] = "You've no funds to withdraw!";
   }

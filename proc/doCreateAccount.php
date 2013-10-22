@@ -4,8 +4,8 @@
     $e = array();
     
     $sql = "SELECT COUNT(*) AS myAccounts FROM accounts WHERE uid = {$_SESSION['id']}";
-    $q = mysql_query($sql);
-    $r = mysql_fetch_array($q);
+    $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+    $r = mysqli_fetch_array($q);
     $nrAccounts = $r['myAccounts'];
     
     if($nrAccounts > $config['user_l_accounts']['value']) $e[] = "You already have the maximum allowed accounts per user in this system!";    
@@ -19,9 +19,9 @@
     if($fwd == 1 && !$fwdto) $e[] = "You must enter a bitcoin address to forward to!";
     
     if(empty($e)){
-        $sql = "SELECT * FROM accounts WHERE account_name LIKE '$name' AND uid = {$_SESSION['id']} AND id != $aid";
-        $q = mysql_query($sql);
-        if(mysql_num_rows($q)) $e[] = "You already have another account with that same name!";                
+        $sql = "SELECT * FROM accounts WHERE account_name LIKE '$name' AND uid = {$_SESSION['id']}" ## AND id != $aid";
+        $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+        if(mysqli_num_rows($q)) $e[] = "You already have another account with that same name!";                
     }    
     
     if(empty($e) && $fwd == 1){
@@ -31,8 +31,8 @@
     
     if(empty($e)){
         $sql = "SELECT account_id FROM accounts WHERE uid = {$_SESSION['id']} ORDER BY account_id DESC LIMIT 0,1";
-        $q = mysql_query($sql);
-        $r = mysql_fetch_assoc($q);
+        $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+        $r = mysqli_fetch_assoc($q);
         $myNewId = $r['account_id'] + 1;
         $c = array(); $v = array();
         $c[] = "`uid`"; $v[] = $_SESSION['id'];
@@ -42,7 +42,7 @@
         $c[] = "`forward`"; $v[] = $fwd;
         $c[] = "`forward_to`"; $v[] = "'$fwdto'";
         $sql = "INSERT INTO accounts(".implode(",",$c).") VALUES(".implode(",",$v).")";
-        mysql_query($sql);
+        mysqli_query($GLOBALS["___mysqli_ston"], $sql);
         $success = "Account created!";
     }else{
         $error = implode("<br/>",$e);

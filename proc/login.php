@@ -7,11 +7,11 @@
     
    if(empty($e)){
        $sql = "SELECT a.*, b.salt FROM users AS a, salt AS b WHERE a.user LIKE '$user' AND b.uid = a.id";
-       $q = mysql_query($sql);
-       if(!mysql_num_rows($q)) $e[] = "Username not found or wrong password!";
+       $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+       if(!mysqli_num_rows($q)) $e[] = "Username not found or wrong password!";
    } 
    if(empty($e)){
-       $u = mysql_fetch_assoc($q);
+       $u = mysqli_fetch_assoc($q);
        $tpass = hash("ripemd160",$pass.$u['salt']);
        if($tpass != $u['pass']) $e[] = "Username not found or wrong password!";
    } 

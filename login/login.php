@@ -11,7 +11,7 @@
 </head>
 <body>
 <?php
-    if($error){
+    if(isset($error) && ($error)) {
 ?>
   <div class="error"><?php echo $error;?></div>
 <?php        

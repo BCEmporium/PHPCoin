@@ -14,17 +14,17 @@
     
    if(empty($e)){
        $sql = "SELECT * FROM users WHERE user LIKE '$user' AND id != {$_SESSION['id']}";
-       $q = mysql_query($sql);
-       if(mysql_num_rows($q)) $e[] = "Username in use!";
+       $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+       if(mysqli_num_rows($q)) $e[] = "Username in use!";
    }
    if(empty($e) && $email){
        $sql = "SELECT * FROM users WHERE email LIKE '$email' AND id != {$_SESSION['id']}";
-       $q = mysql_query($sql);
-       if(mysql_num_rows($q)) $e[] = "Email already registered!";
+       $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+       if(mysqli_num_rows($q)) $e[] = "Email already registered!";
    }       
    
    if(empty($e)){
-        mysql_query("UPDATE users SET user = '$user', name = '$name', email = '$email' WHERE id = {$_SESSION['id']}");
+        mysqli_query($GLOBALS["___mysqli_ston"], "UPDATE users SET user = '$user', name = '$name', email = '$email' WHERE id = {$_SESSION['id']}");
         $_SESSION['name'] = $name;
         $_SESSION['user'] = $user;
         $_SESSION['email'] = $email;

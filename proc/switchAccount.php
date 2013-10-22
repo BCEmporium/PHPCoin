@@ -7,8 +7,8 @@
     
     if(empty($e)){
         $sql = "SELECT * FROM accounts WHERE account_id = $id AND uid = {$_SESSION['id']} LIMIT 0,1";
-        $q = mysql_query($sql);
-        if(!mysql_num_rows($q)) $e[] = "Account not found!";
+        $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+        if(!mysqli_num_rows($q)) $e[] = "Account not found!";
     }
     
     if(empty($e)){

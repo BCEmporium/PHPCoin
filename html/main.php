@@ -24,7 +24,8 @@ $(function(){
     <label>Name</label> <?php echo $_SESSION['name'];?>
 </div>
 <?php
-    $actAcount = end(explode("_",$_SESSION['btaccount']));
+    $tmp = explode("_",$_SESSION['btaccount']);
+    $actAcount = end($tmp);
     $accountBalance = 0;
 ?>
 <div class="infoLine">
@@ -32,8 +33,8 @@ $(function(){
     <select id="active_account">
 <?php
     $sql = "SELECT * FROM accounts WHERE uid = {$_SESSION['id']}";
-    $q = mysql_query($sql);
-    while($r = mysql_fetch_assoc($q)){
+    $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+    while($r = mysqli_fetch_assoc($q)){
         if($actAcount == $r['account_id']){
          $accountBalance = $r['balance'];
          $activeAccounID = $r['id'];
@@ -93,14 +94,14 @@ $(function(){
         </tr>
 <?php
     $sql = "SELECT * FROM movements WHERE account_id = $activeAccounID ORDER BY id DESC LIMIT 0,10";
-    $q = mysql_query($sql);
-    if(!mysql_num_rows($q)){
+    $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+    if(!mysqli_num_rows($q)){
 ?>
     <tr><td colspan="5" align="center">nothing to display</td></tr>
 <?php        
     }
     $k = 0;
-    while($r = mysql_fetch_assoc($q)){
+    while($r = mysqli_fetch_assoc($q)){
 ?>
      <tr class="listingRow<?php echo $k;?>">
         <td><?php echo $r['dtime'];?></td>

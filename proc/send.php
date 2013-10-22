@@ -8,8 +8,8 @@
     
     if(empty($e)){
        $sql = "SELECT a.pass, b.salt FROM users AS a, salt AS b WHERE a.id = {$_SESSION['id']} AND b.uid = a.id";
-       $q = mysql_query($sql);
-       $mu = mysql_fetch_assoc($q);
+       $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+       $mu = mysqli_fetch_assoc($q);
        $testPass = hash("ripemd160",$pass . $mu['salt']);
        if($testPass != $mu['pass']) $e[] = "Wrong current password!";        
     }
@@ -26,12 +26,12 @@
     
     if(empty($e)){
         $sql = "SELECT id,balance FROM accounts WHERE uid = {$_SESSION['id']} AND account_id = {$act[2]}";
-        $q = mysql_query($sql);
-        if(!mysql_num_rows($q)) $e[] = "Active account not found!";        
+        $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+        if(!mysqli_num_rows($q)) $e[] = "Active account not found!";        
     }
     
     if(empty($e)){
-        $account = mysql_fetch_assoc($q);
+        $account = mysqli_fetch_assoc($q);
         $available = $account['balance'] - 0.0005;    
         if($available <= 0) $e[] = "You've no funds to withdraw!";        
     }
@@ -49,9 +49,9 @@
         
         $previous_balance = 0;
         $sql = "SELECT * FROM movements WHERE account_id = {$account['id']} ORDER BY id DESC LIMIT 0,1";
-        $q = mysql_query($sql);
-        if(mysql_num_rows($q)){
-            $lastmove = mysql_fetch_assoc($q);
+        $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+        if(mysqli_num_rows($q)){
+            $lastmove = mysqli_fetch_assoc($q);
             $previous_balance = $lastmove['balance'];
         }
         
@@ -63,27 +63,27 @@
                 $e[] = "Invalid destination local account!";
               }else{
                 $sql = "SELECT * FROM accounts WHERE uid = {$recAct[1]} AND account_id = {$recAct[2]}";
-                $q = mysql_query($sql);
-                if(!mysql_num_rows($q)){
+                $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+                if(!mysqli_num_rows($q)){
                     $e[] = "Local destination address but the destination account wasn't found!";
                 }else{
-                    $receiver = mysql_fetch_assoc($q);  
+                    $receiver = mysqli_fetch_assoc($q);  
                     $new_balance = $previous_balance - $amount;    
                     //Get the current block
                     $cBlock = $b->getblockcount();
-                    mysql_query("INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`,`txblock`) VALUES({$account['id']},'".date("Y-m-d H:i:s")."','Payment to $addrto',$amount,0,$new_balance,$cBlock)");
-                    mysql_query("UPDATE accounts SET balance = balance - $amount WHERE id = {$account['id']}"); 
+                    mysqli_query($GLOBALS["___mysqli_ston"], "INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`,`txblock`) VALUES({$account['id']},'".date("Y-m-d H:i:s")."','Payment to $addrto',$amount,0,$new_balance,$cBlock)");
+                    mysqli_query($GLOBALS["___mysqli_ston"], "UPDATE accounts SET balance = balance - $amount WHERE id = {$account['id']}"); 
                     //A small issue; if the destination account is forwarded, will not forward to prevent loop attacks.
                    $prevBal = 0;
                    $sql = "SELECT balance FROM movements WHERE account_id = {$receiver['id']} ORDER BY id DESC LIMIT 0,1";
-                   $q = mysql_query($sql);
-                   if(mysql_num_rows($q)){
-                       $pbal = mysql_fetch_assoc($q);
+                   $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+                   if(mysqli_num_rows($q)){
+                       $pbal = mysqli_fetch_assoc($q);
                        $prevBal = $pbal['balance'];
                    }
                    $newBal = $prevBal + $amount;                    
-                   mysql_query("INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`,`txblock`) VALUES({$receiver['id']},'".date("Y-m-d H:i:s")."','Payment from {$_SESSION['name']}',$amount,1,$newBal,$cBlock)");
-                   mysql_query("UPDATE accounts SET balance = balance + $amount WHERE id = {$receiver['id']}");                    
+                   mysqli_query($GLOBALS["___mysqli_ston"], "INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`,`txblock`) VALUES({$receiver['id']},'".date("Y-m-d H:i:s")."','Payment from {$_SESSION['name']}',$amount,1,$newBal,$cBlock)");
+                   mysqli_query($GLOBALS["___mysqli_ston"], "UPDATE accounts SET balance = balance + $amount WHERE id = {$receiver['id']}");                    
                     
                 }
               }        
@@ -94,16 +94,16 @@
                         $new_balance = $previous_balance - $amount;    
                         //Get the current block
                         $cBlock = $b->getblockcount();
-                        mysql_query("INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`,`txblock`) VALUES({$account['id']},'".date("Y-m-d H:i:s")."','Payment to $addrto',$amount,0,$new_balance,$cBlock)");
-                        mysql_query("UPDATE accounts SET balance = balance - $amount WHERE id = {$account['id']}");               
+                        mysqli_query($GLOBALS["___mysqli_ston"], "INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`,`txblock`) VALUES({$account['id']},'".date("Y-m-d H:i:s")."','Payment to $addrto',$amount,0,$new_balance,$cBlock)");
+                        mysqli_query($GLOBALS["___mysqli_ston"], "UPDATE accounts SET balance = balance - $amount WHERE id = {$account['id']}");               
                         //Get the transaction info to see what went with fees
                         $txinfo = $b->gettransaction($txid);
                         $fee = 0;
                         $fee -= $txinfo['fee'];
                         $new_balance -= $fee;
                         if($fee > 0){
-                            mysql_query("INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`,`txblock`) VALUES({$account['id']},'".date("Y-m-d H:i:s")."','Bitcoin Network Fee',$fee,0,$new_balance,$cBlock)");
-                            mysql_query("UPDATE accounts SET balance = balance - $fee WHERE id = {$account['id']}");                                           
+                            mysqli_query($GLOBALS["___mysqli_ston"], "INSERT INTO movements(`account_id`,`dtime`,`description`,`amount`,`credit`,`balance`,`txblock`) VALUES({$account['id']},'".date("Y-m-d H:i:s")."','Bitcoin Network Fee',$fee,0,$new_balance,$cBlock)");
+                            mysqli_query($GLOBALS["___mysqli_ston"], "UPDATE accounts SET balance = balance - $fee WHERE id = {$account['id']}");                                           
                         }                
             }
     }
