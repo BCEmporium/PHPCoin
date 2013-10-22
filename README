@@ -1,0 +1,6 @@
+PHPCoin
+=======
+
+Requires bitcoind, php with mysqli, mysql and a web server.
+
+Allows multiple users to manage multiple wallets and payments.
