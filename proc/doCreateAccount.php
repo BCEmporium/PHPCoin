@@ -19,7 +19,7 @@
     if($fwd == 1 && !$fwdto) $e[] = "You must enter a bitcoin address to forward to!";
     
     if(empty($e)){
-        $sql = "SELECT * FROM accounts WHERE account_name LIKE '$name' AND uid = {$_SESSION['id']}" ## AND id != $aid";
+        $sql = "SELECT * FROM accounts WHERE account_name LIKE '$name' AND uid = {$_SESSION['id']}"; ## AND id != $aid";
         $q = mysqli_query($GLOBALS["___mysqli_ston"], $sql);
         if(mysqli_num_rows($q)) $e[] = "You already have another account with that same name!";                
     }    
